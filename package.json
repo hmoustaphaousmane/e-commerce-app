@@ -1,0 +1,28 @@
+{
+  "name": "e-commerce-app-api",
+  "version": "1.0.0",
+  "description": "A basic e-commerce app API",
+  "keywords": [
+    "backend",
+    "express",
+    "e-commerce",
+    "api"
+  ],
+  "license": "ISC",
+  "author": "Hassane M. O.",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
