@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const productsRouter = require("./router/product");
+
 const app = express();
 const PORT = 3000;
 
@@ -17,10 +19,7 @@ mongoose
 // Middlewares
 app.use(express.json());
 
-// Endpoints
-app.get("/", (req, res) => {
-  res.send("E-commerce App");
-});
+app.use("/products", productsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
