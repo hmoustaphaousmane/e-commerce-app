@@ -17,7 +17,7 @@ const schema = mongoose.Schema(
     role: {
       type: String,
       require: true,
-      enum: ["admin", "costomer"],
+      enum: ["admin", "customer"],
     },
   },
   {
