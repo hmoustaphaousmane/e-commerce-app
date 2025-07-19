@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const productsRouter = require("./router/product");
+const authRouter = require("./router/auth");
 
 const app = express();
 const PORT = 3000;
@@ -20,6 +21,7 @@ mongoose
 app.use(express.json());
 
 app.use("/products", productsRouter);
+app.use("/auth", authRouter)
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
