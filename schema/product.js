@@ -21,6 +21,11 @@ const schema = mongoose.Schema(
       enum: ["in-stock", "low-stock", "out-of-stock"],
       default: "in-stock",
     },
+    brand: {
+      type: mongoose.Types.ObjectId,
+      ref: "brands",
+      require: true
+    }
   },
   {
     timestamps: true,
