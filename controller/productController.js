@@ -1,4 +1,6 @@
+const { populate } = require("dotenv");
 const Product = require("../schema/product");
+const brandModel = require("../schema/brand");
 
 const getAllProducts = async (req, res) => {
   try {
@@ -13,8 +15,18 @@ const getAllProducts = async (req, res) => {
 };
 
 const addProduct = async (req, res) => {
-  const { productName, cost, productImages, description, stockStatus } =
+  const { productName, cost, productImages, description, stockStatus, brandId } =
     req.body;
+  
+  const brandDetails = await brandModel.findById(brandId);
+  console.log(brandDetails);  
+
+  if(!brandDetails) {
+    res.status(404).send({
+      message: "The provided brand does not exist."
+    });
+    return;
+  }
 
   const newProduct = await Product.create({
     productName,
@@ -22,13 +34,14 @@ const addProduct = async (req, res) => {
     productImages,
     description,
     stockStatus,
+    brand: brandId
   });
   console.log(newProduct);
 
   res.status(201).send({
     message: "Product added successfully",
-    newProduct
-  })
+    newProduct,
+  });
 };
 
 const deleteProduct = async (req, res) => {
@@ -38,12 +51,30 @@ const deleteProduct = async (req, res) => {
 
   res.send({
     message: "Product deleted successfully",
-    productToDelete
-  })
-}
+    productToDelete,
+  });
+};
+
+const getProductByBrand = async (req, res) => {
+  const { brand, page, limit } = req.params;
+
+  const products = await Product.paginate(
+    {brand},
+    {
+      page,
+      limit,
+      populate: {
+        path: "brand",
+      },
+    }
+  );
+
+  res.send({ products });
+};
 
 module.exports = {
   getAllProducts,
   addProduct,
-  deleteProduct
+  deleteProduct,
+  getProductByBrand,
 };
