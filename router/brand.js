@@ -6,8 +6,8 @@ const isAdmin = require("../middleware/isAdmin");
 const router = express.Router();
 
 router.post("/", isAdmin, brandController.createBrand);
-router.put("/:id", brandController.updateBrand);
+router.put("/:id", isAdmin, brandController.updateBrand);
 router.get("/", brandController.getBrands);
-router.delete("/:id", brandController.deleteBrand);
+router.delete("/:id", isAdmin, brandController.deleteBrand);
 
 module.exports = router;
