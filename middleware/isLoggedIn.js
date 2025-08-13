@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const isAdmin = async (req, res, next) => {
+const isLoggedIn = async (req, res, next) => {
   try {
     if (!req.headers.authorization) {
       res.status(400).send({
@@ -13,17 +13,11 @@ const isAdmin = async (req, res, next) => {
     // console.log(scheme, token);
 
     if (scheme.toLowerCase() == "bearer") {
-      const value = jwt.verify(token, process.env.JWT_KEY);
-      // console.log("value", value);
+      const decodeValue = jwt.verify(token, process.env.JWT_KEY);
+      // console.log("Decode value", decodeValue);
 
-      if (value.role == "admin") {
-        req.decode = value;
-        next();
-      } else {
-        res.status(422).send({
-          message: "Must be an Admin"
-        });
-      }
+      req.decoded = decodeValue;
+      next();
     } else {
       res.status(422).send({
         message: "Invalid authentication scheme",
@@ -34,4 +28,4 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = isAdmin;
+module.exports = isLoggedIn;

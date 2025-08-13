@@ -1,13 +1,18 @@
 const express = require("express");
 
 const brandController = require("../controller/brandController");
-const isAdmin = require("../middleware/isAdmin");
+const isLoggedIn = require("../middleware/isLoggedIn");
+const roleBasedAccess = require("../middleware/roleBasedAccess");
 
 const router = express.Router();
 
-router.post("/", isAdmin, brandController.createBrand);
-router.put("/:id", isAdmin, brandController.updateBrand);
 router.get("/", brandController.getBrands);
-router.delete("/:id", isAdmin, brandController.deleteBrand);
+
+// Middleware that checks the is logged in
+router.use(isLoggedIn);
+
+router.post("/", roleBasedAccess(["admin"]), brandController.createBrand);
+router.put("/:id", roleBasedAccess(["admin"]), brandController.updateBrand);
+router.delete("/:id", roleBasedAccess(["admin"]), brandController.deleteBrand);
 
 module.exports = router;
