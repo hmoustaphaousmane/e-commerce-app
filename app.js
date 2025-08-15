@@ -5,6 +5,7 @@ require("dotenv").config();
 const productsRouter = require("./router/product");
 const authRouter = require("./router/auth");
 const brandRouter = require("./router/brand");
+const orderRouter = require("./router/order");
 
 const app = express();
 const PORT = 3000;
@@ -22,8 +23,9 @@ mongoose
 app.use(express.json());
 
 app.use("/products", productsRouter);
-app.use("/auth", authRouter)
+app.use("/auth", authRouter);
 app.use("/brands", brandRouter);
+app.use("/orders", orderRouter);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
