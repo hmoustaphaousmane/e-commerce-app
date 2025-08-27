@@ -6,7 +6,7 @@ const createOrder = async (req, res) => {
   try {
     const { orders } = req.body;
 
-    if (!orders) {
+    if (!Array.isArray(orders) || orders.length === 0) {
       return res.status(422).send({
         message: "Orders list is empty. Supply at least one.",
       });
@@ -22,25 +22,26 @@ const createOrder = async (req, res) => {
     const products = await productModel.find({
       productName: { $in: productNames },
     });
+
     const productsMap = new Map(
       products.map((product) => [product.productName, product])
     );
 
-    // List of product names match in database
-    const keys = [...productsMap.keys()]; //=> Array.from(productsMap.keys());
-
     // Loop to check if each order's product is part of the products that came
     // back from database or not
     for (const order of orders) {
-      if (keys.includes(order.productName) && order.quantity > 0) {
-        const validProduct = productsMap.get(order.productName);
-        console.log(`Valid product => ${validProduct}`);
+      const product = productsMap.get(order.productName);
+
+      if (product && product._id == order.productId && Number.isInteger(order.quantity) && order.quantity > 0) {
+        console.log("Product ID in Order => ", order.productId);
+        console.log("Fetched Product ID=> ", product._id);
+        console.log(`Valid product => ${product}`);
 
         newOrders.push({
-          productName: validProduct.productName,
-          productId: validProduct._id,
+          productName: product.productName,
+          productId: product._id,
           quantity: order.quantity,
-          totalCost: order.quantity * validProduct.cost,
+          totalCost: order.quantity * product.cost,
           customerId: req.decoded.userId,
         });
       } else {
@@ -102,7 +103,10 @@ const updateOrderStatus = async (req, res) => {
   }
 
   const { shippingStatus } = req.body;
-  if (!shippingStatus || !["pending", "shipped", "delivered"].includes(shippingStatus)) {
+  if (
+    !shippingStatus ||
+    !["pending", "shipped", "delivered"].includes(shippingStatus)
+  ) {
     return res.status(422).send({
       message: "Invalid shipping status.",
     });
