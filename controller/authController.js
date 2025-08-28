@@ -34,7 +34,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  
+
   const userDetails = await User.findOne({ email });
   console.log(userDetails);
 
@@ -64,7 +64,31 @@ const login = async (req, res) => {
   });
 };
 
+const profile = async (req, res) => {
+  try {
+    const user = await User.findById(req.decoded.userId).select(
+      "-_id fullName email role"
+    );
+    console.log(user);
+
+    if (!user || user.email !== req.decoded.email) {
+      return res.status(400).send({
+        message: "User not found",
+      });
+    }
+
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).send({
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
+  profile,
 };
