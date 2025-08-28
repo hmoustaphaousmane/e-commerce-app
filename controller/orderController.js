@@ -32,7 +32,12 @@ const createOrder = async (req, res) => {
     for (const order of orders) {
       const product = productsMap.get(order.productName);
 
-      if (product && product._id == order.productId && Number.isInteger(order.quantity) && order.quantity > 0) {
+      if (
+        product &&
+        product._id == order.productId &&
+        Number.isInteger(order.quantity) &&
+        order.quantity > 0
+      ) {
         console.log("Product ID in Order => ", order.productId);
         console.log("Fetched Product ID=> ", product._id);
         console.log(`Valid product => ${product}`);
@@ -124,4 +129,41 @@ const updateOrderStatus = async (req, res) => {
   });
 };
 
-module.exports = { createOrder, getOrders, getSingleOrder, updateOrderStatus };
+const ordersHistory = async (req, res) => {
+  try {
+    const decoded = req.decoded;
+    console.log(decoded);
+
+    // let orders;
+    // if (decoded.role === "admin") {
+    //   orders = await orderModel.find();
+    // } else if (decoded.role === "customer") {
+    // orders = await orderModel.find({ customerId: decoded.userId });
+    // }
+
+    const orders =
+      decoded.role === "admin"
+        ? await orderModel.find()
+        : await orderModel.find({ customerId: decoded.userId });
+
+    console.log(`Order history length => ${orders.length}`);
+
+    res.send({
+      orderHistory: { length: orders.length, orders },
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).send({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getOrders,
+  getSingleOrder,
+  updateOrderStatus,
+  ordersHistory,
+};
