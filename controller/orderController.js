@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 const orderModel = require("../schema/order");
 const productModel = require("../schema/product");
 
@@ -108,6 +108,7 @@ const updateOrderStatus = async (req, res) => {
   }
 
   const { shippingStatus } = req.body;
+
   if (
     !shippingStatus ||
     !["pending", "shipped", "delivered"].includes(shippingStatus)
@@ -116,11 +117,23 @@ const updateOrderStatus = async (req, res) => {
       message: "Invalid shipping status.",
     });
   }
+
   const updatedOrder = await orderModel.findByIdAndUpdate(
     orderId,
     { shippingStatus },
     { new: true }
   );
+
+  if (!updatedOrder) {
+    return res.status(500).send({
+      message: "Failed to update shipping status.",
+    });
+  }
+
+  req.io.to(updatedOrder.customerId.toString()).emit("notification", {
+    title: "New shipping status",
+    message: `Your last order shipping status has been updated to ${shippingStatus}`,
+  });
 
   res.send({
     message: "Order's shipping status updated successfully.",
