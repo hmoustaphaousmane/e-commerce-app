@@ -27,6 +27,7 @@ const orderSchema = mongoose.Schema(
     customerId: {
       type: mongoose.Types.ObjectId,
       required: true,
+      ref: "users"
     },
   },
   { timestamps: true }
